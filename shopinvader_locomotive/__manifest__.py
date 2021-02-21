@@ -4,7 +4,7 @@
 
 {
     "name": "Shopinvader Locomotive CMS Connector",
-    "version": "13.0.2.1.1",
+    "version": "13.0.3.1.0",
     "category": "Connector",
     "summary": "Manage communications between Shopinvader and Locomotive CMS",
     "author": "Akretion",
@@ -19,6 +19,7 @@
     ],
     "data": [
         "views/shopinvader_backend_view.xml",
+        "views/product_filter_view.xml",
         "data/ir_cron.xml",
         "data/queue_job_function_data.xml",
     ],
