@@ -7,7 +7,7 @@ from io import BytesIO
 
 from odoo import api, fields, models
 from odoo.addons.base_sparse_field.models.fields import Serialized
-from PIL import Image, WebPImagePlugin
+from PIL import Image, WebPImagePlugin  # noqa: F401
 
 
 class ShopinvaderImageMixin(models.AbstractModel):
