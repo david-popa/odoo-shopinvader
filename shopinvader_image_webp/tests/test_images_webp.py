@@ -23,20 +23,8 @@ class TestShopinvaderImageWebpCase(TestShopinvaderImageCase):
                 )
                 self.assertIn("tag", img)
 
-    def test_hash_and_compute_flag(self):
-        variant = self.shopinvader_variant
-        self.assertFalse(variant.images_webp_store_hash)
-        self.assertTrue(variant._images_webp_must_recompute())
-        orig_hash = variant._get_images_store_hash()
-        variant.images_store_hash = orig_hash
-        self.assertFalse(variant._images_must_recompute())
-        # change hash by changing scale
-        self.backend.shopinvader_variant_resize_ids[0].key = "very-small"
-        self.assertTrue(variant._images_webp_must_recompute())
-
     def test_images_recompute(self):
         variant = self.shopinvader_variant
-        self.assertTrue(variant._images_webp_must_recompute())
         with mock.patch.object(
             type(variant), "_get_image_webp_data_for_record"
         ) as mocked:
@@ -45,7 +33,6 @@ class TestShopinvaderImageWebpCase(TestShopinvaderImageCase):
             mocked.assert_called()
 
         variant.invalidate_cache(["images_webp"])
-        self.assertFalse(variant._images_webp_must_recompute())
         with mock.patch.object(
             type(variant), "_get_image_webp_data_for_record"
         ) as mocked:
@@ -57,7 +44,6 @@ class TestShopinvaderImageWebpCase(TestShopinvaderImageCase):
         # simulate change in image scale
         self.backend.shopinvader_variant_resize_ids[0].key = "very-small"
         variant.invalidate_cache(["images_webp"])
-        self.assertTrue(variant._images_webp_must_recompute())
         with mock.patch.object(
             type(variant), "_get_image_webp_data_for_record"
         ) as mocked:

@@ -7,7 +7,7 @@ from io import BytesIO
 
 from odoo import api, fields, models
 from odoo.addons.base_sparse_field.models.fields import Serialized
-from PIL import Image
+from PIL import Image, WebPImagePlugin
 
 
 class ShopinvaderImageMixin(models.AbstractModel):
@@ -23,22 +23,19 @@ class ShopinvaderImageMixin(models.AbstractModel):
     def _compute_images_webp(self):
         # Force computation if needed
         self.filtered(
-            lambda x: x._images_webp_must_recompute()
+            lambda x: x._images_must_recompute()
         )._compute_images_webp_stored()
         for record in self:
             record.images_webp = record.images_webp_stored
 
     def _compute_images_webp_stored(self):
-        super()._compute_images_stored()
+        self._compute_images_stored()
         for record in self:
             record.images_webp_stored = (
                 record._get_image_webp_data_for_record()
             )
-            record.images_webp_store_hash = record._get_images_store_hash()
 
-    def _images_webp_must_recompute(self):
-        return self.images_webp_store_hash != self._get_images_store_hash()
-
+    @api.model
     def _create_storage_image(self, image, url_key):
         storage_image_ctx = self.env["storage.image"].with_context(
             skip_generate_odoo_thumbnail=True
@@ -55,10 +52,6 @@ class ShopinvaderImageMixin(models.AbstractModel):
             )
 
     def _get_image_webp_data_for_record(self):
-        # By default Odoo preloads PIL with only the basic image formats
-        # This allows PIL to load all the image formats available
-        Image._initialized = 1
-
         res = []
         resizes = self._resize_scales()
         for image_relation in self[self._image_field]:
