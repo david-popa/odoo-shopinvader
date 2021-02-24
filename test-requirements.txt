@@ -1,4 +1,3 @@
---extra-index-url=https://wheelhouse.shopinvader.com/simple
 # TODO locomotivecms dep should be in the setup.py of the addon that needs it
 git+https://github.com/akretion/locomotivecms-python-client.git#egg=locomotivecms
 # test requirements
