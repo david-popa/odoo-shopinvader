@@ -175,7 +175,7 @@ class TestInvoiceService(CommonCase):
         self.assertEquals(invoice2.partner_id, self.service.partner)
         self.assertEquals(invoice3.partner_id, self.service.partner)
         self.assertEquals(invoice4.partner_id, self.service.partner)
-        result = self.service.dispatch("get", _id=invoice1.id)
+        result = self.service.dispatch("get", invoice1.id)
         data = result.get("data", [])
         self._check_data_content([data], invoice1)
         return
@@ -190,7 +190,7 @@ class TestInvoiceService(CommonCase):
         invoice1 = self._confirm_and_invoice_sale(self.sale)
         self.assertEquals(invoice1.partner_id, self.service.partner)
         # The owner can do a 'get' on it
-        self.service.dispatch("get", _id=invoice1.id)
+        self.service.dispatch("get", invoice1.id)
         # Now use another user/partner
         with self.work_on_services(partner=self.partner2) as work:
             self.service = work.component(usage="invoice")

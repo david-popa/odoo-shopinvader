@@ -43,6 +43,7 @@ class AddressTestCase(object):
         address_ids = [
             address["id"] for address in self.address_service.search()["data"]
         ]
+        self.address_params = dict(self.address_params, type="invoice", parent_id=self.partner.id)
         address_list = self.address_service.dispatch(
             "create", params=self.address_params
         )["data"]
