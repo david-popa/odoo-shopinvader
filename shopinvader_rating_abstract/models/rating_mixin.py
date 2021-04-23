@@ -7,6 +7,7 @@ from odoo import api, models
 class RatingAbstractMixin(models.AbstractModel):
     _inherit = "rating.mixin"
     _name = "shopinvader.rating.mixin.astract"
+    _description = "Shopinvader rating mixin"
 
     @api.depends("index_id", "record_id")
     def _compute_ratings(self):

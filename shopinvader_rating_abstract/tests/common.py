@@ -25,5 +25,5 @@ class CommonRatingCase(CommonCase):
         cls.data = {
             "rating": 5,
             "feedback": "Feedback text",
-            "product_id": cls.product2.id,
+            "id": cls.product2.id,
         }

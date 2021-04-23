@@ -1,11 +1,13 @@
 # Copyright 2021 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+from contextlib import contextmanager
 
 from odoo import api, fields, models
 
 
 class Rating(models.Model):
     _inherit = "rating.rating"
+    _name = "rating.rating"
 
     _sql_constraints = [
         ("rating_range", "CHECK(1=1)", "Rating should be between 0 and 5"),
@@ -25,15 +27,6 @@ class Rating(models.Model):
     def _compute_rating_str(self):
         for record in self:
             record.rating_str = str(record.rating)
-
-    def _inverse_rating_str(self):
-        for record in self:
-            record.rating = float(record.rating_str)
-
-    def synchronize_rating(self):
-        res_model = fields.first(self).res_model
-        records = self.env[res_model].browse(self.mapped("res_id"))
-        records.synchronize()
 
     shopinvader_backend_id = fields.Many2one(
         "shopinvader.backend", string="Backend", required=True
@@ -55,3 +48,40 @@ class Rating(models.Model):
         inverse="_inverse_rating_str",
         readonly=True,
     )
+
+    def _inverse_rating_str(self):
+        for record in self:
+            record.rating = float(record.rating_str)
+
+    def synchronize_rating(self):
+        res_model = fields.first(self).res_model
+        records = self.env[res_model].browse(self.mapped("res_id"))
+        records.synchronize()
+
+    @contextmanager
+    def _write_publisher_comment(self):
+        try:
+
+            def _mock_has_group(self_local, group_ext_id):
+                return True
+
+            self.env["res.users"]._patch_method("has_group", _mock_has_group)
+            yield
+        finally:
+            self.env["res.users"]._revert_method("has_group")
+
+    def write(self, values):
+        if (
+            values.get("publisher_comment")
+            and self.env.user.has_group("rating_moderation.group_rating_moderation")
+            and not self.env.user.has_group("website.group_website_publisher")
+        ):
+            with self._write_publisher_comment():
+                res = super().write(values)
+
+            self.shopinvader_backend_id._send_notification(
+                "rating_publisher_response", self
+            )
+            return res
+
+        return super().write(values)

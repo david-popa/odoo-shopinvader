@@ -7,7 +7,18 @@ from odoo.addons.component.core import AbstractComponent
 
 
 class RatingAbstractService(AbstractComponent):
-    """Shopinvader abstract service to create/edit/delete customer's ratings"""
+    """
+    Shopinvader abstract service to create/edit/delete customers ratings
+
+    To create a new service using this abstract you only need to add the following:
+
+    _inherit = "shopinvader.abstract.rating.service"
+    _name = "your.service.name"
+    _usage = "your.usage"
+    _description = "your service description"
+    _rating_model: The model you want to add ratings to
+
+    """
 
     _name = "shopinvader.abstract.rating.service"
     _inherit = "base.shopinvader.service"
@@ -36,6 +47,7 @@ class RatingAbstractService(AbstractComponent):
     def _get_record(self, record_id):
         return self.env[self._rating_model].browse(record_id)
 
+    # pylint: disable=W8106
     def create(self, **params):
         """
         Create a new rating
@@ -48,6 +60,7 @@ class RatingAbstractService(AbstractComponent):
         vals = self._prepare_params(params)
         record = self.env[self._expose_model].create(vals)
         record.synchronize_rating()
+        record.shopinvader_backend_id._send_notification("rating_created", record)
         return {"created": True, "message": "rating created"}
 
     def update(self, _id, **params):

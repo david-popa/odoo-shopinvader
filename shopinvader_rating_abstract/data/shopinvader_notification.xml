@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+  <record id="shopinvader_rating_created" model="shopinvader.notification">
+    <field name="notification_type">rating_created</field>
+    <field name="model_id" ref="rating.model_rating_rating" />
+    <field
+            name="template_id"
+            ref="shopinvader_rating_abstract.email_new_rating_notification"
+        />
+  </record>
+  <record id="shopinvader_rating_publisher_response" model="shopinvader.notification">
+    <field name="notification_type">rating_publisher_response</field>
+    <field name="model_id" ref="rating.model_rating_rating" />
+    <field
+            name="template_id"
+            ref="shopinvader_rating_abstract.email_rating_publisher_response_notification"
+        />
+  </record>
+</odoo>
